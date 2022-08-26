@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { getCustomRepository, getRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { Movie } from '../../entities/movie';
 
 @Injectable()
 export class MoviesService {
 
-    private readonly repo = getRepository(Movie);
+
+    private repo = getRepository(Movie);
 
     async create(movie: Movie) {
         const savedMovie = this.repo.create(movie);
@@ -15,40 +16,42 @@ export class MoviesService {
 
     async getAll() {
         const result = await this.repo.find()
+        if (!result) {
+            throw new Error("Movie not found")
+        }
         return result;
     }
 
     async getById(id: string) {
         const result = await this.repo.findOne({ where: { id } })
         if (!result) {
-            throw new Error("Not found")
+            throw new Error("Movie not found")
         }
         return result;
     }
 
     async update(movie: Movie) {
-        let originalMovie = this.getById(movie.id);
-        /* if (originalMovie) {
-            if (!(originalMovie.description == movie.description)) {
-                originalMovie.description = movie.description
-            } else if (!(originalMovie.name == movie.name)) {
-                originalMovie.name = movie.name
-            } else if (!(originalMovie.releaseDate == movie.releaseDate)) {
-                originalMovie.releaseDate = movie.releaseDate
-            } */
+        let originalMovie = await this.getById(movie.id);
+        if (originalMovie) {
 
-        console.log(originalMovie)
-        return null;
+            originalMovie.name = originalMovie.name == movie.name ? originalMovie.name : movie.name
+            originalMovie.description = originalMovie.description == movie.description ? originalMovie.description : movie.description
+            originalMovie.releaseDate = originalMovie.releaseDate == movie.releaseDate ? originalMovie.releaseDate : movie.releaseDate
+            await this.repo.update(movie.id, movie);
+            const updatedMovie = await this.getById(movie.id);
+            return updatedMovie;
+        }
+
+        throw new Error("Movie not found")
+
     }
 
+    delete(id: string) {
+        let originalMovie = this.getById(id);
+        if (!originalMovie) {
+            throw new Error("Movie not found")
+        }
+        this.repo.delete(id)
+        return "Success"
+    }
 }
-
-/* delete (id: string) {
-    let originalMovie = this.getById(id);
-    if (!originalMovie) {
-        return false
-    }
-
-    return true
-} */
-

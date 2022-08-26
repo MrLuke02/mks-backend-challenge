@@ -5,11 +5,10 @@ import { Movie } from '../entities/movie';
 @Controller('movies')
 export class MoviesController {
     constructor(private movieService: MoviesService) {
-        console.log("aqui")
     }
 
     @Post()
-    async createMovie(@Body() params) {
+    async createMovie(@Body() params): Promise<Movie> {
         const movie = new Movie(params.name, params.description, params.releaseDate);
         return this.movieService.create(movie);
     }
@@ -26,11 +25,13 @@ export class MoviesController {
 
     @Put()
     async updateMovie(@Body() params): Promise<Movie> {
-        return null
+        const movie = new Movie(params.name, params.description, params.releaseDate);
+        movie.id = params.id;
+        return this.movieService.update(movie);
     }
 
-    /*  @Delete(":id")
-     async deleteMovie(@Param('id') id): Promise<Boolean> {
-         return this.movieService.delete(id)
-     } */
+    @Delete(":id")
+    async deleteMovie(@Param('id') id) {
+        return this.movieService.delete(id);
+    }
 }
