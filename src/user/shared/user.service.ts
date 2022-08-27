@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { User } from '../../entities/user';
+const md5 = require('md5')
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,14 @@ export class UsersService {
 
     async getById(id: string) {
         const result = await this.repo.findOne({ where: { id } })
+        if (!result) {
+            throw new Error("User not found")
+        }
+        return result;
+    }
+
+    async login(name: string, password: string) {
+        const result = await this.repo.findOne({ where: { name, password: md5(password) } })
         if (!result) {
             throw new Error("User not found")
         }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { User } from '../entities/user';
 import { UsersService } from './shared/user.service';
 
@@ -33,9 +33,9 @@ export class UserController {
         const newUser = await this.userService.update(user)
         return newUser;
     }
-    /*
-        @Delete(":id")
-        async deleteMovie(@Param('id') id) {
-            return this.movieService.delete(id);
-        } */
+
+    @Delete(":id")
+    async deleteMovie(@Param('id') id) {
+        return this.userService.delete(id);
+    }
 }

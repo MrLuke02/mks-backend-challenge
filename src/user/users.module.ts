@@ -4,7 +4,8 @@ import { UsersService } from './shared/user.service';
 
 @Module({
     controllers: [UserController],
-    providers: [UsersService]
+    providers: [UsersService],
+    exports: [UsersService]
 })
 export class UserModule {
 
