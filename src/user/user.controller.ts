@@ -16,8 +16,6 @@ export class UserController {
 
     @Get()
     async getAll(): Promise<User[]> {
-        console.log("asdf");
-
         return this.userService.getAll();
     }
 
